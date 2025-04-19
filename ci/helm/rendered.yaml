@@ -1,0 +1,65 @@
+---
+# Source: my-go-demo/templates/service.yaml
+# my-go-demo-chart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-user-service
+  namespace: ai-engine
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: my-go-demo
+  type: ClusterIP
+---
+# Source: my-go-demo/templates/deployment.yaml
+# my-go-demo-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-user-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-go-demo
+  template:
+    metadata:
+      labels:
+        app: my-go-demo
+    spec:
+      containers:
+      - name: my-go-demo
+        image: "docker.io/library/hello-user:0.1:0.1"
+        ports:
+        - containerPort: 8080
+        env:
+          - name: ENV
+            value: "dev5"
+---
+# Source: my-go-demo/templates/ingress.yaml
+# my-go-demo-chart/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-user-ingress
+  namespace: ai-engine
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "90"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "90"
+spec:
+  rules:
+    - host: go.demo.dev-cloudml.xiaomi.srv
+      http:
+        paths:
+          - pathType: Prefix
+            path: /blog
+            backend:
+              service:
+                name: hello-user-service
+                port:
+                  number: 8080

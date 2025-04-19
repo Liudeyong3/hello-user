@@ -1,0 +1,27 @@
+# my-go-demo-chart/values.yaml
+namespace: ai-engine
+appName: my-go-demo
+containerPort: 8080
+
+deployment:
+  replicaCount: 1
+  env: dev5
+
+image:
+  repository: docker.io/library/hello-user
+  tag: 0.1
+
+service:
+  type: ClusterIP
+  port: 8080
+
+serviceAccountName: sa-cloudml-base
+
+ingress:
+  enabled: true
+  host: go.demo.dev-cloudml.xiaomi.srv
+  path: /blog
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "90"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "90"
