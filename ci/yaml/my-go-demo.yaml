@@ -1,0 +1,61 @@
+# Deployment 定义
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-go-demo
+  namespace: ai-engine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-go-demo
+  template:
+    metadata:
+      labels:
+        app: my-go-demo
+    spec:
+      containers:
+      - name: my-go-demo
+        image: micr.cloud.mioffice.cn/ldy-image-test/my-go-demo:1.0.2
+        ports:
+        - containerPort: 8080
+        env:
+          - name: ENV
+            value: "dev"
+---
+# Service 定义
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-go-demo
+  namespace: ai-engine
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: my-go-demo
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-go-demo-ingress
+  namespace: ai-engine
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "70"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "90"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "90"
+spec:
+  rules:
+    - host: go.demo.dev-cloudml.xiaomi.srv
+      http:
+        paths:
+          - pathType: Prefix
+            path: /blog
+            backend:
+              service:
+                name: my-go-demo
+                port:
+                  number: 8080
