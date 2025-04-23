@@ -9,7 +9,7 @@ deployment:
 
 image:
   repository: docker.io/library/hello-user
-  tag: 0.1
+  tag: 0.2
 
 service:
   type: ClusterIP
@@ -19,7 +19,7 @@ serviceAccountName: sa-cloudml-base
 
 ingress:
   enabled: true
-  host: go.demo.dev-cloudml.xiaomi.srv
+  host: hello-world.example
   path: /blog
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
